@@ -11,13 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class MemberServiceTests {
+    @Autowired
     private MemberService memberService;
 
 
-    @Autowired
-    public void setMemberService(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @Test
     @Transactional
