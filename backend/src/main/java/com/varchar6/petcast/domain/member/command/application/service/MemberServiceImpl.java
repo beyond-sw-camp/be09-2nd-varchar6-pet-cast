@@ -1,14 +1,14 @@
 package com.varchar6.petcast.domain.member.command.application.service;
 
-import com.varchar6.petcast.domain.member.command.application.dto.request.MemberDeleteRequestDTO;
-import com.varchar6.petcast.domain.member.command.application.dto.request.MemberUpdateRequestDTO;
 import com.varchar6.petcast.domain.member.command.domain.aggregate.Member;
+import com.varchar6.petcast.domain.member.command.domain.aggregate.RoleMember;
+import com.varchar6.petcast.domain.member.command.domain.aggregate.RoleType;
 import com.varchar6.petcast.domain.member.command.domain.repository.MemberRepository;
 import com.varchar6.petcast.domain.member.command.application.dto.request.MemberRequestDTO;
 import com.varchar6.petcast.domain.member.command.application.dto.response.MemberResponseDTO;
+import com.varchar6.petcast.domain.member.command.domain.repository.RoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,54 +21,42 @@ import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service(value="commandMemberServiceImpl")
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final String FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(FORMAT);
-    private final ModelMapper modelMapper;
 
     @Autowired
     public MemberServiceImpl(MemberRepository memberRepository,
-                             BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper) {
+                             BCryptPasswordEncoder bCryptPasswordEncoder,
+                             RoleRepository roleRepository) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.modelMapper = modelMapper;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
     public MemberResponseDTO registerMember(MemberRequestDTO memberRequestDTO) {
-        log.info("memberRequestDTO.image: {}", memberRequestDTO.getImage());
+
+        // 비밀번호 암호화
         memberRequestDTO.setPassword(bCryptPasswordEncoder.encode(memberRequestDTO.getPassword()));
 
-        return entityToResponseDTO(memberRepository.save(requestDTOToEntity(memberRequestDTO)));
+        // Member 생성
+        Member member = memberRepository.save(requestDTOToEntity(memberRequestDTO));
+
+        // 회원 권한 부여
+        roleRepository.save(RoleMember.builder()
+                .memberId(member.getId())
+                .roleId(RoleType.CUSTOMER.getRoleId())
+                .build());
+
+        return entityToResponseDTO(member);
     }
-
-    @Override
-    @Transactional
-    public MemberResponseDTO updatePwd(MemberUpdateRequestDTO memberUpdateRequestDTO) {
-
-        Member member = memberRepository.findById(memberUpdateRequestDTO.getId()).orElseThrow();
-        member.setPassword(memberUpdateRequestDTO.getPassword());
-
-        MemberResponseDTO responseDTO = modelMapper.map(member, MemberResponseDTO.class);
-        return responseDTO;
-    }
-
-    @Override
-    @Transactional
-    public MemberResponseDTO deleteMember(MemberDeleteRequestDTO memberDeleteRequestDTO) {
-
-        Member member = memberRepository.findById(memberDeleteRequestDTO.getId()).orElseThrow();
-        member.setActive(memberDeleteRequestDTO.getActive());
-
-        MemberResponseDTO responseDTO = modelMapper.map(member, MemberResponseDTO.class);
-        return responseDTO;
-    }
-
 
     public static Member requestDTOToEntity(MemberRequestDTO memberRequestDTO) {
         return Member.builder()
@@ -89,11 +77,6 @@ public class MemberServiceImpl implements MemberService{
                 .active(true)
                 .introduction(memberRequestDTO.getIntroduction())
                 .build();
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
     }
 
     public static MemberResponseDTO entityToResponseDTO(Member member) {

@@ -1,12 +1,9 @@
-package com.varchar6.petcast.domain.member.command.application.dto.request;
+package com.varchar6.petcast.domain.member.command.application.vo.request;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class MemberRequestDTO {
+@Data
+public class RequestRegistUserVO {
     private String loginId;
     private String password;
     private String name;
@@ -14,5 +11,4 @@ public class MemberRequestDTO {
     private String nickname;
     private String image;
     private String introduction;
-
 }

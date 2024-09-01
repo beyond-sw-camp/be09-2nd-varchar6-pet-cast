@@ -13,7 +13,6 @@ public class AppConfiguration {
         return new ModelMapper();
     }
 
-    /* 설명. 암호화 방식 bean 추가*/
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();

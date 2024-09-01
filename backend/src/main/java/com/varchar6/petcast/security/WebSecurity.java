@@ -1,13 +1,16 @@
 package com.varchar6.petcast.security;
 
-import com.varchar6.petcast.domain.member.command.application.service.MemberService;
+import com.varchar6.petcast.domain.member.query.service.MemberAuthenticationService;
+import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,43 +20,50 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurity {
 
-    private final MemberService memberService;
+    private final MemberAuthenticationService memberAuthenticationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final Environment environment;
 
     @Autowired
-    public WebSecurity(MemberService memberService,
-                       BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.memberService = memberService;
+    public WebSecurity(MemberAuthenticationService memberAuthenticationService,
+                       BCryptPasswordEncoder bCryptPasswordEncoder,
+                       Environment environment) {
+        this.memberAuthenticationService = memberAuthenticationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.environment = environment;
     }
 
     @Bean
-    public SecurityFilterChain config(HttpSecurity http) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
-         /* 설명. csrf 비활성화 */
-        http.csrf((csrf) -> csrf.disable());
+         // csrf 비활성화
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        /* 설명. AuthenticationManager 등록을 위한 builder 생성 */
+        // AuthenticationManager 등록을 위한 builder 생성
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        /* 설명. Manager를 사용할 service(우리) + 암호화 방식 설정 */
-        authenticationManagerBuilder.userDetailsService(memberService)
+        // memberService, bCryptPasswordEncoder 등록
+        authenticationManagerBuilder
+                .userDetailsService(memberAuthenticationService)
                 .passwordEncoder(bCryptPasswordEncoder);
 
-        /* 설명. AuthenticationManager 등록 */
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        /* 설명. Request의 권한 지정 */
         http.authorizeHttpRequests((authz) ->
-                authz.requestMatchers(new AntPathRequestMatcher("/api/v1/members/**")).permitAll()
+                authz
+                        .requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                         .anyRequest().authenticated()
         )
-                /* 설명. authenicationManager에 권한 범위 지정 후 등록 */
-                .authenticationManager(authenticationManager)
-                /* 설명. session을 STATELESS로 지정 (연결할 떄마다 권한 인증받고 사용)*/
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .authenticationManager(authenticationManager)       // authenticationManager 등록
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));    // 세션 비활성화
+        http.addFilter(getAuthenticationFilter(authenticationManager));
 
         return http.build();
+    }
+
+    private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
+        return new AuthenticationFilter(authenticationManager, memberAuthenticationService, environment);
     }
 }
