@@ -1,5 +1,6 @@
 package com.varchar6.petcast.domain.request.service;
 
+import com.varchar6.petcast.domain.request.dto.RequestRequestDTO;
 import com.varchar6.petcast.domain.request.dto.RequestResponseDTO;
 
 import java.util.List;
@@ -14,4 +15,16 @@ public interface RequestService {
 
     // 상세 조회
     RequestResponseDTO findRequestById(int requestId);
+
+    // 요청서 작성
+    RequestResponseDTO createRequest(RequestRequestDTO requestRequestDTO);
+
+    //  요청서 삭제
+    void deleteRequest(int requestId);
+
+    // 요청서 수락
+    RequestResponseDTO acceptRequest(int requestId);
+
+    // 요청서 거절
+    RequestResponseDTO rejectRequest(int requestId);
 }

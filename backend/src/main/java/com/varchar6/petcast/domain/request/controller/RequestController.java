@@ -1,7 +1,7 @@
 package com.varchar6.petcast.domain.request.controller;
 
 import com.varchar6.petcast.domain.member.command.domain.aggregate.Member;
-import com.varchar6.petcast.domain.request.aggregate.Request;
+import com.varchar6.petcast.domain.request.dto.RequestRequestDTO;
 import com.varchar6.petcast.domain.request.dto.RequestResponseDTO;
 import com.varchar6.petcast.domain.request.repository.RequestMapper;
 import com.varchar6.petcast.domain.request.service.RequestService;
@@ -43,5 +43,33 @@ public class RequestController {
     public ResponseEntity<RequestResponseDTO> getRequestById(@PathVariable int requestId) {
         RequestResponseDTO request = requestService.findRequestById(requestId);
         return ResponseEntity.ok(request);
+    }
+
+    // 요청서 작성
+    @PostMapping
+    public ResponseEntity<RequestResponseDTO> createRequest(@RequestBody RequestRequestDTO requestRequestDTO) {
+        RequestResponseDTO createdRequest = requestService.createRequest(requestRequestDTO);
+        return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
+    }
+
+    // 요청서 삭제
+    @DeleteMapping("/list/{requestId}")
+    public ResponseEntity<Void> deleteRequest(@PathVariable int requestId) {
+        requestService.deleteRequest(requestId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 요청서 수락
+    @PutMapping("/list/{requestId}/accept")
+    public ResponseEntity<RequestResponseDTO> acceptRequest(@PathVariable int requestId) {
+        RequestResponseDTO updatedRequest = requestService.acceptRequest(requestId);
+        return ResponseEntity.ok(updatedRequest);
+    }
+
+    // 요청서 거절
+    @PutMapping("/list/{requestId}/reject")
+    public ResponseEntity<RequestResponseDTO> rejectRequest(@PathVariable int requestId) {
+        RequestResponseDTO updatedRequest = requestService.rejectRequest(requestId);
+        return ResponseEntity.ok(updatedRequest);
     }
 }

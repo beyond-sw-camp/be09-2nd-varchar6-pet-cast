@@ -1,12 +1,14 @@
 package com.varchar6.petcast.domain.request.service;
 
-import com.varchar6.petcast.domain.request.aggregate.Request;
+import com.varchar6.petcast.domain.request.Request;
+import com.varchar6.petcast.domain.request.dto.RequestRequestDTO;
 import com.varchar6.petcast.domain.request.dto.RequestResponseDTO;
 import com.varchar6.petcast.domain.request.repository.RequestMapper;
 import com.varchar6.petcast.domain.request.repository.RequestRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,4 +73,68 @@ public class RequestServiceImpl implements RequestService {
                 .active(true)
                 .build();
     }
-}
+
+    // 요청서 작성
+    @Transactional
+    public RequestResponseDTO createRequest(RequestRequestDTO requestRequestDTO) {
+        Request request = requestDTOToEntity(requestRequestDTO);
+        request = requestRepository.save(request);
+        return entityToResponseDTO(request);
+    }
+
+    private Request requestDTOToEntity(RequestRequestDTO requestRequestDTO) {
+        return Request.builder()
+                .content(requestRequestDTO.getContent())
+                .cost(requestRequestDTO.getCost())
+                .location(requestRequestDTO.getLocation())
+                .time(requestRequestDTO.getTime())
+                .created_at(LocalDateTime.now().format(FORMATTER))
+                .updated_at(LocalDateTime.now().format(FORMATTER))
+                .active(true)
+                .build();
+    }
+
+//    private RequestResponseDTO entityToResponseDTO(Request request) {
+//        return RequestResponseDTO.builder()
+//                .id(request.getId())
+//                .content(request.getContent())
+//                .cost(request.getCost())
+//                .location(request.getLocation())
+//                .time(request.getTime())
+//                .createdAt(LocalDateTime.now().format(FORMATTER))
+//                .updatedAt(LocalDateTime.now().format(FORMATTER))
+//                .active(request.isActive())
+//                .build();
+
+    // 요청서 삭제
+    @Transactional
+    public void deleteRequest(int requestId) {
+        if (!requestRepository.existsById(requestId)) {
+            throw new IllegalArgumentException("해당 " + requestId + " 번 요청서를 찾을 수 없습니다.");
+        }
+        requestRepository.deleteById(requestId);
+    }
+
+    // 요청서 수락
+    @Transactional
+    public RequestResponseDTO acceptRequest(int requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 " + requestId + " 번 요청서를 찾을 수 없습니다."));
+
+        request.accept();  // 상태 변경
+        request = requestRepository.save(request);  // 상태 업데이트 저장
+        return entityToResponseDTO(request);
+    }
+
+    // 요청서 거절
+    @Transactional
+    public RequestResponseDTO rejectRequest(int requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 " + requestId + " 번 요청서를 찾을 수 없습니다."));
+
+        request.reject();  // 상태 변경
+        request = requestRepository.save(request);  // 상태 업데이트 저장
+        return entityToResponseDTO(request);
+    }
+    }
+

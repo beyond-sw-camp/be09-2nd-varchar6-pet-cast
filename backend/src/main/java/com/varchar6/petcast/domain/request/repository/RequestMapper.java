@@ -1,6 +1,7 @@
 package com.varchar6.petcast.domain.request.repository;
 
-import com.varchar6.petcast.domain.request.aggregate.Request;
+
+import com.varchar6.petcast.domain.request.Request;
 
 import java.util.List;
 
