@@ -1,6 +1,5 @@
 package com.varchar6.petcast.domain.member.query.service;
 
-import com.varchar6.petcast.domain.member.command.application.dto.request.MemberRequestDTO;
 import com.varchar6.petcast.domain.member.query.dto.MemberDTO;
 import com.varchar6.petcast.domain.member.query.mapper.MemberMapper;
 import lombok.extern.slf4j.Slf4j;

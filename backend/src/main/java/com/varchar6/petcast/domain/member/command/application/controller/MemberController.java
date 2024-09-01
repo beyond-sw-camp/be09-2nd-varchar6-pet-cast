@@ -1,10 +1,11 @@
 package com.varchar6.petcast.domain.member.command.application.controller;
 
+import com.varchar6.petcast.common.response.ResponseMessage;
+import com.varchar6.petcast.domain.member.command.application.dto.request.MemberDeleteRequestDTO;
 import com.varchar6.petcast.domain.member.command.application.dto.request.MemberRequestDTO;
+import com.varchar6.petcast.domain.member.command.application.dto.request.MemberUpdateRequestDTO;
 import com.varchar6.petcast.domain.member.command.application.dto.response.MemberResponseDTO;
 import com.varchar6.petcast.domain.member.command.application.service.MemberService;
-import com.varchar6.petcast.domain.member.command.application.vo.request.RequestRegistUserVO;
-import com.varchar6.petcast.domain.member.command.application.vo.response.ResponseRegistUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,30 @@ public class MemberController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<ResponseRegistUserVO> signUp(@RequestBody RequestRegistUserVO newUser){
+    public ResponseEntity<MemberResponseDTO> signUp(@RequestBody MemberRequestDTO newMember){
 
-        MemberRequestDTO memberRequestDTO = modelMapper.map(newUser, MemberRequestDTO.class);
+        MemberRequestDTO memberRequestDTO = modelMapper.map(newMember, MemberRequestDTO.class);
 
         MemberResponseDTO memberResponseDTO = memberService.registerMember(memberRequestDTO);
 
-        ResponseRegistUserVO responseMember = modelMapper.map(memberResponseDTO, ResponseRegistUserVO.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberResponseDTO);
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseMember);
+    @PostMapping("/update-pwd")
+    public ResponseEntity<ResponseMessage> updatePwd(@RequestBody MemberUpdateRequestDTO memberUpdateRequestDTO){
+
+        MemberResponseDTO memberResponseDTO = memberService.updatePwd(memberUpdateRequestDTO);
+
+        return ResponseEntity.ok(new ResponseMessage(201, "비밀번호 수정 성공"
+                , memberResponseDTO));
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<ResponseMessage> deleteMember(@RequestBody MemberDeleteRequestDTO memberDeleteRequestDTO){
+
+        MemberResponseDTO memberResponseDTO = memberService.deleteMember(memberDeleteRequestDTO);
+
+        return ResponseEntity.ok(new ResponseMessage(201, "회원 비활성화"
+                , memberResponseDTO));
     }
 }

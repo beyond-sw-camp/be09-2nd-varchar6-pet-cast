@@ -1,11 +1,14 @@
 package com.varchar6.petcast.domain.member.command.application.service;
 
+import com.varchar6.petcast.domain.member.command.application.dto.request.MemberDeleteRequestDTO;
+import com.varchar6.petcast.domain.member.command.application.dto.request.MemberUpdateRequestDTO;
 import com.varchar6.petcast.domain.member.command.domain.aggregate.Member;
 import com.varchar6.petcast.domain.member.command.domain.repository.MemberRepository;
 import com.varchar6.petcast.domain.member.command.application.dto.request.MemberRequestDTO;
 import com.varchar6.petcast.domain.member.command.application.dto.response.MemberResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,12 +28,14 @@ public class MemberServiceImpl implements MemberService{
 
     private static final String FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(FORMAT);
+    private final ModelMapper modelMapper;
 
     @Autowired
     public MemberServiceImpl(MemberRepository memberRepository,
-                             BCryptPasswordEncoder bCryptPasswordEncoder) {
+                             BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -41,6 +46,29 @@ public class MemberServiceImpl implements MemberService{
 
         return entityToResponseDTO(memberRepository.save(requestDTOToEntity(memberRequestDTO)));
     }
+
+    @Override
+    @Transactional
+    public MemberResponseDTO updatePwd(MemberUpdateRequestDTO memberUpdateRequestDTO) {
+
+        Member member = memberRepository.findById(memberUpdateRequestDTO.getId()).orElseThrow();
+        member.setPassword(memberUpdateRequestDTO.getPassword());
+
+        MemberResponseDTO responseDTO = modelMapper.map(member, MemberResponseDTO.class);
+        return responseDTO;
+    }
+
+    @Override
+    @Transactional
+    public MemberResponseDTO deleteMember(MemberDeleteRequestDTO memberDeleteRequestDTO) {
+
+        Member member = memberRepository.findById(memberDeleteRequestDTO.getId()).orElseThrow();
+        member.setActive(memberDeleteRequestDTO.getActive());
+
+        MemberResponseDTO responseDTO = modelMapper.map(member, MemberResponseDTO.class);
+        return responseDTO;
+    }
+
 
     public static Member requestDTOToEntity(MemberRequestDTO memberRequestDTO) {
         return Member.builder()
