@@ -1,6 +1,6 @@
 package com.varchar6.petcast.domain.member.query.service;
 
-import com.varchar6.petcast.domain.member.query.vo.CustomUser;
+import com.varchar6.petcast.security.CustomUser;
 import com.varchar6.petcast.domain.member.query.vo.RoleVO;
 import com.varchar6.petcast.domain.member.query.mapper.MemberMapper;
 import com.varchar6.petcast.domain.member.query.vo.MemberVO;
@@ -51,7 +51,7 @@ public class MemberAuthenticationServiceImpl implements MemberAuthenticationServ
                 loginMember.getImage(),
                 loginMember.getCreatedAt(),
                 loginMember.getUpdatedAt(),
-                loginMember.getActive(),
+                loginMember.isActive(),
                 loginMember.getIntroduction(),
                 grantedAuthorities
                 );

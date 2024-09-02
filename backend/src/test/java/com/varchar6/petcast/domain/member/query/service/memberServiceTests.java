@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class MemberServiceTests {
+
     @Autowired
     private MemberService memberService;
 
@@ -24,5 +25,6 @@ class MemberServiceTests {
     @Transactional
     public void 멤버생성_및_조회() {
     }
+
 
 }

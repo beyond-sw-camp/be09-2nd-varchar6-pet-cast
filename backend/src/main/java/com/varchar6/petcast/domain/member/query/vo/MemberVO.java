@@ -19,7 +19,7 @@ public class MemberVO {
     private String image;
     private String createdAt;
     private String updatedAt;
-    private Boolean active;
+    private boolean active;
     private String introduction;
     private List<RoleVO> roleVOList;
 }
