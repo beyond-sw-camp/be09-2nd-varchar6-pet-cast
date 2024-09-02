@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberResponseDTO {
+
     private String loginId;
     private String password;
     private String name;
@@ -20,4 +21,5 @@ public class MemberResponseDTO {
     private String updatedAt;
     private boolean active;
     private String introduction;
+
 }

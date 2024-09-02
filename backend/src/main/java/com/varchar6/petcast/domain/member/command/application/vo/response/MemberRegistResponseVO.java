@@ -1,16 +1,10 @@
-package com.varchar6.petcast.domain.member.query.vo;
+package com.varchar6.petcast.domain.member.command.application.vo.response;
 
-import lombok.*;
+import lombok.Data;
 
-import java.util.List;
+@Data
+public class MemberRegistResponseVO {
 
-@ToString
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MemberVO {
-    private int id;
     private String loginId;
     private String password;
     private String name;
@@ -21,5 +15,5 @@ public class MemberVO {
     private String updatedAt;
     private Boolean active;
     private String introduction;
-    private List<RoleVO> roleVOList;
+
 }

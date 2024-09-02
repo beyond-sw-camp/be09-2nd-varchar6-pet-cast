@@ -51,7 +51,7 @@ public class MemberAuthenticationServiceImpl implements MemberAuthenticationServ
                 loginMember.getImage(),
                 loginMember.getCreatedAt(),
                 loginMember.getUpdatedAt(),
-                loginMember.isActive(),
+                loginMember.getActive(),
                 loginMember.getIntroduction(),
                 grantedAuthorities
                 );

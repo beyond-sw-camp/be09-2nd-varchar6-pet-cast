@@ -1,6 +1,5 @@
 package com.varchar6.petcast.common.response;
 
-
 import lombok.*;
 
 @NoArgsConstructor

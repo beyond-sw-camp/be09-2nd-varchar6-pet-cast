@@ -3,7 +3,7 @@ package com.varchar6.petcast.domain.member.command.application.vo.response;
 import lombok.Data;
 
 @Data
-public class ResponseRegistUserVO {
+public class MemberUpdateResponseVO {
 
     private String loginId;
     private String password;
@@ -13,7 +13,6 @@ public class ResponseRegistUserVO {
     private String image;
     private String createdAt;
     private String updatedAt;
-    private boolean active;
+    private Boolean active;
     private String introduction;
-
 }

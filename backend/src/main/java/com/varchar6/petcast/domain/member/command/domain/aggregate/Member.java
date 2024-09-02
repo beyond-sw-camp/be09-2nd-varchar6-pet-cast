@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
+@Setter
 @Entity
-@ToString
 @Table(name = "tbl_member")
 @Builder
 @NoArgsConstructor

@@ -33,7 +33,7 @@
          WHERE A.ID = #{ id }
     </select>
 
-<!--    권한 정보까지 모두 조회-->
+    <!--    권한 정보까지 모두 조회-->
     <resultMap id="memberWithDistinctRolesMap" type="com.varchar6.petcast.domain.member.query.vo.MemberVO">
         <id property="id" column="ID"/>
         <result property="loginId" column="LOGIN_ID"/>
@@ -74,4 +74,71 @@
          WHERE M.LOGIN_ID = #{ memberId }
          GROUP BY R.NAME
     </select>
+
+    <select id="checkDoubleByLoginId" resultMap="memberWithDistinctRolesMap" parameterType="string">
+        SELECT
+        A.LOGIN_ID
+        , A.PASSWORD
+        , A.NAME
+        , A.PHONE
+        , A.NICKNAME
+        , A.IMAGE
+        , A.CREATED_AT
+        , A.UPDATED_AT
+        , A.ACTIVE
+        , A.INTRODUCTION
+        FROM TBL_MEMBER A
+        WHERE A.LOGIN_ID = #{ loginId }
+    </select>
+
+    <select id="checkDoubleByNickName" resultMap="memberWithDistinctRolesMap" parameterType="string">
+        SELECT
+               A.LOGIN_ID
+             , A.PASSWORD
+             , A.NAME
+             , A.PHONE
+             , A.NICKNAME
+             , A.IMAGE
+             , A.CREATED_AT
+             , A.UPDATED_AT
+             , A.ACTIVE
+             , A.INTRODUCTION
+          FROM TBL_MEMBER A
+         WHERE A.NICKNAME = #{ nickname }
+    </select>
+
+    <select id="searchLoginIdByNameAndPhone" resultMap="memberWithDistinctRolesMap" parameterType="map">
+        SELECT
+               A.LOGIN_ID
+             , A.PASSWORD
+             , A.NAME
+             , A.PHONE
+             , A.NICKNAME
+             , A.IMAGE
+             , A.CREATED_AT
+             , A.UPDATED_AT
+             , A.ACTIVE
+             , A.INTRODUCTION
+          FROM TBL_MEMBER A
+         WHERE A.NAME = #{ name }
+           AND A.PHONE = #{ phone }
+    </select>
+
+    <select id="checkIdAndPhone" resultMap="memberWithDistinctRolesMap" parameterType="map">
+        SELECT
+              A.LOGIN_ID
+             , A.PASSWORD
+             , A.NAME
+             , A.PHONE
+             , A.NICKNAME
+             , A.IMAGE
+             , A.CREATED_AT
+             , A.UPDATED_AT
+             , A.ACTIVE
+             , A.INTRODUCTION
+          FROM TBL_MEMBER A
+         WHERE A.LOGIN_ID = #{ loginId }
+           AND A.PHONE = #{ phone }
+    </select>
+
 </mapper>

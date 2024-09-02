@@ -1,5 +1,5 @@
 ### SEND post request with json body- 요청 정보 + 헤더파일 정보
-POST http://localhost:8123/api/v1/member/regist
+POST http://localhost:8000/api/v1/member/regist
 Content-Type: application/json
 
 {
