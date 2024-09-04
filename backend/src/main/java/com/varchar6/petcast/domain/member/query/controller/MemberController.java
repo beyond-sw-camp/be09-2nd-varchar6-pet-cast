@@ -2,6 +2,7 @@ package com.varchar6.petcast.domain.member.query.controller;
 
 import com.varchar6.petcast.common.response.ResponseMessage;
 import com.varchar6.petcast.domain.member.query.service.MemberService;
+import com.varchar6.petcast.domain.member.query.vo.MemberVO;
 import com.varchar6.petcast.domain.member.query.vo.RoleVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,9 @@ public class MemberController {
     }
 
     @PostMapping("/id-check")
-    public ResponseEntity<ResponseMessage> checkDoubleByLoginId(@RequestBody String loginId){
+    public ResponseEntity<ResponseMessage> checkDoubleByLoginId(@RequestBody MemberVO memberVO){
+
+        String loginId = memberVO.getLoginId();
 
         Boolean answer = memberService.checkDoubleByLoginId(loginId);
 
@@ -59,7 +62,9 @@ public class MemberController {
     }
 
     @PostMapping("/nickname-check")
-    public ResponseEntity<ResponseMessage> checkDoubleByNickName(@RequestBody String nickName){
+    public ResponseEntity<ResponseMessage> checkDoubleByNickName(@RequestBody MemberVO memberVO){
+
+        String nickName = memberVO.getNickname();
 
         Boolean answer = memberService.checkDoubleByNickName(nickName);
 
@@ -74,8 +79,10 @@ public class MemberController {
     }
 
     @GetMapping("/search-loginId")
-    public ResponseEntity<ResponseMessage> searchLoginIdByNameAndPhone(@RequestAttribute("memberName") String name,
-                                                                      @RequestAttribute("memberPhone") String phone){
+    public ResponseEntity<ResponseMessage> searchLoginIdByNameAndPhone(@RequestBody MemberVO memberVO){
+
+        String name = memberVO.getName();
+        String phone = memberVO.getPhone();
 
         String memberLoginId = memberService.searchLoginIdByNameAndPhone(name, phone);
 
@@ -116,10 +123,10 @@ public class MemberController {
     }
 
     @PostMapping("/password-check")
-    public ResponseEntity<ResponseMessage> checkPasswordByIdAndPassword(@RequestBody Map<String, String> request,
+    public ResponseEntity<ResponseMessage> checkPasswordByIdAndPassword(@RequestBody MemberVO memberVO,
                                                                         @RequestAttribute("memberId") int id){
 
-        String password = request.get("password");
+        String password = memberVO.getPassword();
         String answer = memberService.checkPasswordByIdAndPassword(id);
 
         log.info(answer);

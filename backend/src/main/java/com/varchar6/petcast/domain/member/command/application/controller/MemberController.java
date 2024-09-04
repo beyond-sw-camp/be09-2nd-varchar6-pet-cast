@@ -86,11 +86,7 @@ public class MemberController {
     }
 
     @PostMapping("/update-member-status")
-    public ResponseEntity<ResponseMessage> updateMemberStatus(@RequestAttribute("memberId") int memberId) {
-
-        MemberUpdateRequestDTO updateStatus = new MemberUpdateRequestDTO();
-
-        updateStatus.setId(memberId);
+    public ResponseEntity<ResponseMessage> updateMemberStatus(@RequestBody MemberUpdateRequestVO updateStatus) {
 
         MemberUpdateRequestDTO memberUpdateRequestDTO
                 = modelMapper.map(updateStatus, MemberUpdateRequestDTO.class);
