@@ -15,7 +15,4 @@ class CompanyServiceTests {
         CategoryResponseDTO categoryResponseDTO = companyService.getCategories("1");
         System.out.println(categoryResponseDTO);
     }
-
-    @Test
-    public void
 }
